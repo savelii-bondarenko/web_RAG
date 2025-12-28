@@ -1,0 +1,14 @@
+[project]
+name = "myproject"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "langchain-core>=1.2.5",
+    "langchain-text-splitters>=1.1.0",
+    "mammoth>=1.11.0",
+    "pandas>=2.3.3",
+    "pymupdf4llm>=0.2.7",
+    "python-magic>=0.4.27",
+]
