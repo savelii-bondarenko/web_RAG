@@ -20,7 +20,7 @@ class Embedder:
 
     def make_embeddings(self,
                         data: list[Document],
-                        batch_size: int = 64) -> dict[str, np.ndarray | list]:
+                        batch_size: int = 64) -> np.ndarray:
         """Make embeddings from a list of documents.
 
         Args:
@@ -28,7 +28,7 @@ class Embedder:
             batch_size (int, optional): Batch size. Defaults to 64.
 
         Returns:
-            Dict[str, np.ndarray | list]: Dictionary with 'dense_vecs', etc.
+            np.ndarray: dense_vecs.
 
         Raises:
             Exception: If encoding fails.
@@ -41,7 +41,7 @@ class Embedder:
                 return_dense=True
             )
             logger.info("Embeddings prepared")
-            return embeddings
+            return embeddings["dense_vecs"]
         except Exception as e:
             logger.critical("Failed to encode documents")
             raise e
