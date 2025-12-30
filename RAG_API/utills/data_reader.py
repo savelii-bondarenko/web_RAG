@@ -2,6 +2,9 @@ import pandas as pd
 from magic import from_buffer
 from mammoth import convert_to_markdown
 from pymupdf4llm import to_markdown
+import logging
+
+logger = logging.getLogger(__name__)
 
 def read_data(file_path: str) -> str:
     """Read data from files.
@@ -11,7 +14,7 @@ def read_data(file_path: str) -> str:
         Supported formats: txt, docx, pdf, xlsx.
 
     Returns:
-    str: Extracted text from the file.
+        str: Extracted text from the file.
 
     Raises:
         FileNotFoundError: If file does not exist.
@@ -25,8 +28,10 @@ def read_data(file_path: str) -> str:
         "xlsx": _read_XLSX,
     }
     try:
+        logger.info("Reading data completed")
         return readers[file_format](file_path)
     except KeyError:
+        logger.error(f"File format {file_format} not supported.")
         raise ValueError("Unsupported file type")
 
 def _read_PDF(file_path: str) -> str:

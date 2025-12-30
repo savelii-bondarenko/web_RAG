@@ -28,7 +28,7 @@ class Embedder:
             batch_size (int, optional): Batch size. Defaults to 64.
 
         Returns:
-            np.ndarray: dense_vecs.
+            np.ndarray: 2D array of dense_vecs.
 
         Raises:
             Exception: If encoding fails.
