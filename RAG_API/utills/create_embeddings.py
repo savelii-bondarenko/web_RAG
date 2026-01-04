@@ -25,7 +25,7 @@ class Embedder:
 
         Args:
             data (list[Document]): List of documents.
-            batch_size (int, optional): Batch size. Defaults to 64.
+            batch_size (int, optional): Batch size. Defaults to 128.
 
         Returns:
             np.ndarray: 2D array of dense_vecs.
