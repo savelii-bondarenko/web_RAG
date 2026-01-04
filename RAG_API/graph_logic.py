@@ -24,11 +24,32 @@ class State(TypedDict):
     extracted_docs: list[Document]
 
 class RAGGraph:
+    """
+     Retrieval-Augmented Generation (RAG) pipeline implemented using LangGraph.
+
+     This class builds a two-stage graph:
+     1. Retriever node — retrieves relevant documents from a vector database.
+     2. Generation node — generates an answer using the retrieved context.
+
+     The graph operates on a shared mutable state (`State`) and is compiled
+     into a LangGraph application.
+     """
     def __init__(self,
                  model,
                  splitted_text: list[Document],
                  embedder,
                  vector_db: Index):
+        """
+        Initializes the RAGGraph.
+
+        Args:
+            model: Language model used for answer generation.
+            splitted_text (list[Document]): List of pre-split source documents
+                corresponding to the embeddings stored in the vector database.
+            embedder: Embedding model with a `make_embeddings` method that
+                converts documents into numpy arrays.
+            vector_db (Index): FAISS index used for similarity search.
+        """
         self.model = model
         self.splitted_text = splitted_text
         self.embedder = embedder
@@ -36,6 +57,25 @@ class RAGGraph:
         self.app = self._build_graph()
 
     def _retriever_node(self, state: State) -> State:
+        """
+        Retriever LangGraph node.
+
+        Generates an embedding for the user query, performs a similarity
+        search in the vector database, and appends the top-k retrieved
+        documents to the graph state.
+
+        Side Effects:
+            Mutates `state["extracted_docs"]` by extending it with retrieved
+            documents.
+
+        Args:
+            state (State): Current graph state. Expects:
+                - state["message"] to contain the user query.
+                - state["extracted_docs"] to be initialized as a list.
+
+        Returns:
+            State: Updated state with retrieved documents appended.
+        """
         message: list[Document] = [Document(page_content=state["message"].content)]
         message_embeddings: ndarray = self.embedder.make_embeddings(message)
         _, indices = self.vector_db.search(x=message_embeddings, k=3)
@@ -43,6 +83,24 @@ class RAGGraph:
         return state
 
     def _generate_node(self, state: State) -> State:
+        """
+        Generation LangGraph node.
+
+        Builds a context from retrieved documents and uses the language
+        model to generate a final answer. The generated answer and
+        document sources are stored in the graph state.
+
+        Side Effects:
+            Sets `state["answer"]` with generated text and source metadata.
+
+        Args:
+            state (State): Current graph state. Expects:
+                - state["message"] to contain the user query.
+                - state["extracted_docs"] to contain retrieved documents.
+
+        Returns:
+            State: Updated state with the generated answer.
+        """
         extracted_docs = "\n".join(doc.page_content for doc in state["extracted_docs"])
         sources = list(set(doc.metadata.get("source", "unknown") for doc in state["extracted_docs"]))
         context: str = f"context: {extracted_docs}, question: {state["message"].content}"
@@ -51,6 +109,15 @@ class RAGGraph:
         return state
 
     def _build_graph(self):
+        """
+        Builds and compiles the LangGraph state graph.
+
+        The graph has the following structure:
+            entry -> retriever -> generate -> finish
+
+        Returns:
+            Compiled LangGraph application.
+        """
         graph = StateGraph(State)
 
         graph.add_node("retriever", self._retriever_node)
