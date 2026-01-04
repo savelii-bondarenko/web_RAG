@@ -20,7 +20,7 @@ class Embedder:
 
     def make_embeddings(self,
                         data: list[Document],
-                        batch_size: int = 64) -> np.ndarray:
+                        batch_size: int = 128) -> np.ndarray:
         """Make embeddings from a list of documents.
 
         Args:
