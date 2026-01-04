@@ -1,6 +1,7 @@
+import os
+
 from langchain_core.messages import AnyMessage, AIMessage
 from langgraph.graph import StateGraph
-
 
 from langchain_core.documents import Document
 from numpy import ndarray
@@ -15,7 +16,7 @@ load_dotenv()
 
 model = ChatDeepSeek(
     model="deepseek-chat",
-    api_key="",
+    api_key=os.getenv("DEEPSEEK_API_KEY"),
 )
 
 class State(TypedDict):
