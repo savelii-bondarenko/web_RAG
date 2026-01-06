@@ -1,6 +1,6 @@
 import os
 
-from langchain_core.messages import AnyMessage, AIMessage
+from langchain_core.messages import AnyMessage, AIMessage, HumanMessage
 from langgraph.graph import StateGraph
 
 from langchain_core.documents import Document
@@ -25,37 +25,24 @@ class State(TypedDict):
     extracted_docs: list[Document]
 
 class RAGGraph:
+    """ Initializes the RAGGraph.
+
+    Args:
+        splitted_text (list[Document]): List of pre-split source documents
+            corresponding to the embeddings stored in the vector database.
+        embedder: Embedding model with a `make_embeddings` method that
+            converts documents into numpy arrays.
+        vector_db (Index): FAISS index used for similarity search.
     """
-     Retrieval-Augmented Generation (RAG) pipeline implemented using LangGraph.
-
-     This class builds a two-stage graph:
-     1. Retriever node — retrieves relevant documents from a vector database.
-     2. Generation node — generates an answer using the retrieved context.
-
-     The graph operates on a shared mutable state (`State`) and is compiled
-     into a LangGraph application.
-     """
     def __init__(self,
-                 model,
                  splitted_text: list[Document],
                  embedder,
                  vector_db: Index):
-        """
-        Initializes the RAGGraph.
 
-        Args:
-            model: Language model used for answer generation.
-            splitted_text (list[Document]): List of pre-split source documents
-                corresponding to the embeddings stored in the vector database.
-            embedder: Embedding model with a `make_embeddings` method that
-                converts documents into numpy arrays.
-            vector_db (Index): FAISS index used for similarity search.
-        """
         self.model = model
         self.splitted_text = splitted_text
         self.embedder = embedder
         self.vector_db = vector_db
-        self.app = self._build_graph()
 
     def _retriever_node(self, state: State) -> State:
         """
@@ -129,3 +116,22 @@ class RAGGraph:
         graph.set_finish_point("generate")
 
         return graph.compile()
+
+    def get_query(self, user_question: str):
+        """
+        Send and get text to and from LLM
+        Args:
+            user_question (str): User's query.
+
+        Returns:
+            result["answer"] (dict(text, source)): Answer of the query.
+
+        """
+        app = self._build_graph()
+        initial_state = {
+            "message": HumanMessage(content=user_question),
+            "answer": {},
+            "extracted_docs": []
+        }
+        result = app.invoke(initial_state)
+        return result["answer"]
