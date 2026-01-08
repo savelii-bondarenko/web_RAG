@@ -11,11 +11,32 @@ app = FastAPI()
 rag_app_instance: RAGGraph | None = None
 
 class UserMessage(BaseModel):
+    """
+    Schema for a user chat message.
+
+    Attributes:
+        message (str): The user's input message.
+    """
     message: str
     model_config = ConfigDict(extra='forbid')
 
 @app.post("/upload")
 async def upload_file(file: UploadFile = File(...)):
+    """
+    Upload a file and initialize the RAG pipeline.
+
+    The uploaded file is temporarily saved to RAM, processed to create
+    embeddings and a vector database, and then removed.
+
+    Args:
+        file (UploadFile): File uploaded by the user.
+
+    Returns:
+        dict: Status message confirming successful initialization {"status": str}.
+
+    Raises:
+        HTTPException: If an error occurs during file processing.
+    """
     global rag_app_instance
     with tempfile.NamedTemporaryFile(delete=False, suffix=f"_{file.filename}") as tmp:
         content = await file.read()
@@ -37,11 +58,32 @@ async def upload_file(file: UploadFile = File(...)):
 
 @app.post("/chat")
 def send_message(user_data: UserMessage):
+    """
+    Send a user message to the RAG bot and return its response.
+
+    Args:
+        user_data (UserMessage): Object containing the user's message.
+
+    Returns:
+        dict: A dictionary with the bot response in the form
+            {"response": str}.
+
+    Raises:
+        HTTPException: If no file has been uploaded before querying the bot.
+    """
     if rag_app_instance is None:
-        raise HTTPException(status_code=400, detail="Сначала загрузите файл через /upload")
+        raise HTTPException(status_code=400, detail="Firstly upload file /upload")
     result = rag_app_instance.get_query(user_data.message)["text"]
     return {"response": result}
 
 
 if __name__ == "__main__":
-    uvicorn.run("server:app", host="0.0.0.0", port=8000, reload=True)
+    """
+    Run the FastAPI application using Uvicorn.
+    """
+    uvicorn.run(
+        "server:app",
+        host="0.0.0.0",
+        port=8000,
+        reload=True
+    )
