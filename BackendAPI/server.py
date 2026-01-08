@@ -75,15 +75,3 @@ def send_message(user_data: UserMessage):
         raise HTTPException(status_code=400, detail="Firstly upload file /upload")
     result = rag_app_instance.get_query(user_data.message)["text"]
     return {"response": result}
-
-
-if __name__ == "__main__":
-    """
-    Run the FastAPI application using Uvicorn.
-    """
-    uvicorn.run(
-        "server:app",
-        host="0.0.0.0",
-        port=8000,
-        reload=True
-    )

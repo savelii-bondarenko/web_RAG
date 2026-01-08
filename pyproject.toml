@@ -1,7 +1,7 @@
 [project]
 name = "myproject"
 version = "0.0.1"
-description = "Add your description here"
+description = "My simple RAG agent"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
@@ -23,4 +23,9 @@ dependencies = [
     "python-multipart>=0.0.21",
     "streamlit>=1.52.2",
     "uvicorn>=0.40.0",
+]
+
+[tool.uv]
+required-environments = [
+    "sys_platform == 'linux' and platform_machine == 'x86_64'"
 ]
