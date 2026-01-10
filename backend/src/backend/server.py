@@ -1,10 +1,9 @@
 import os
 import tempfile
-import uvicorn
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from pydantic import BaseModel, ConfigDict
 
-from RAG_API import prepare_rag_assets, RAGGraph
+from rag import prepare_rag_assets, RAGGraph
 
 app = FastAPI()
 
@@ -19,6 +18,10 @@ class UserMessage(BaseModel):
     """
     message: str
     model_config = ConfigDict(extra='forbid')
+
+@app.get("/health")
+def health_check():
+    return {"status": "ok"}
 
 @app.post("/upload")
 async def upload_file(file: UploadFile = File(...)):
@@ -48,7 +51,7 @@ async def upload_file(file: UploadFile = File(...)):
         splitted_chunks, embedder, vector_db = prepare_rag_assets(tmp_path)
         rag_app_instance = RAGGraph(splitted_chunks, embedder, vector_db)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Ошибка обработки файла: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"File upload error: {str(e)}")
     finally:
         os.unlink(tmp_path)
         pass

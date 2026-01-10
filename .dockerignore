@@ -1,18 +1,31 @@
+# Python virtual environments
 venv/
 .venv/
 env/
 
+# Python cache
 **/__pycache__/
 *.py[cod]
 *$py.class
 
+# Logs and temp
 *.log
 .tmp/
 tmp/
 
+# Environment variables
 .env
+
+# Git and IDE
 .git/
 .idea/
 .vscode/
 
+# Docs and Docker configs (по желанию)
 README.md
+Dockerfile
+docker-compose.yml
+
+# Optional: large data files
+data/
+models/

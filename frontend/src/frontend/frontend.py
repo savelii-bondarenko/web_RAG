@@ -1,8 +1,10 @@
 import streamlit as st
 import requests
+import os
 
 supported_formats = ("txt", "pdf", "docx", "xlsx")
-BACKEND_URL = "http://127.0.0.1:8000"
+
+BACKEND_URL = os.environ.get("BACKEND_URL", "http://localhost:8000")
 
 if "file_uploaded" not in st.session_state:
     st.session_state.file_uploaded = False

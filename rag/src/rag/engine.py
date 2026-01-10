@@ -1,6 +1,6 @@
 from numpy import ndarray
 
-from .utills import read_data, split_text, Embedder, create_vectorDB
+from .utills import (read_data, split_text, Embedder, create_vectorDB)
 from langchain_core.documents import Document
 from faiss import Index
 
