@@ -12,6 +12,7 @@ services:
       - "8000:8000"
     volumes:
       - ./backend/src:/app/backend/src
+      - ./rag/src:/app/rag/src
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8000/health" ]
       interval: 5s
@@ -30,7 +31,7 @@ services:
     volumes:
       - ./frontend/src:/app/frontend/src
     environment:
-      - BACKEND_URL=http://rag_backend:8000
+      - BACKEND_URL=http://backend:8000
     depends_on:
       backend:
         condition: service_healthy
