@@ -6,6 +6,9 @@ supported_formats = ("txt", "pdf", "docx", "xlsx")
 
 BACKEND_URL = os.environ.get("BACKEND_URL", "http://localhost:8000")
 
+if "session_id" not in st.session_state:
+    st.session_state.session_id = None
+
 if "file_uploaded" not in st.session_state:
     st.session_state.file_uploaded = False
 
@@ -33,6 +36,7 @@ with st.sidebar:
                 response = requests.post(f"{BACKEND_URL}/upload", files=files)
 
                 if response.status_code == 200:
+                    st.session_state.session_id = response.json().get("session_id")
                     st.session_state.file_uploaded = True
                     st.session_state.messages = []
                     st.success("File uploaded successfully!")
@@ -64,7 +68,8 @@ if prompt := st.chat_input("Write something...", disabled=not st.session_state.f
         with st.spinner("Analyzing document..."):
             answer = "Error..."
             try:
-                response = requests.post(f"{BACKEND_URL}/chat", json={"message": prompt})  # return {"response": str}
+                response = requests.post(f"{BACKEND_URL}/chat", json={"message": prompt,
+                                                                      "session_id": st.session_state.session_id})  # return {"response": str}
                 answer = response.json().get("response", "No response returned")
 
             except requests.exceptions.ConnectionError:
