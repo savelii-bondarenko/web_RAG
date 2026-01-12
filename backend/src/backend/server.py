@@ -6,12 +6,6 @@ from fastapi import FastAPI, UploadFile, File, HTTPException, Form
 from pydantic import BaseModel, ConfigDict
 
 from rag import prepare_rag_assets, RAGGraph
-
-import logging
-
-# Настройка логгера в начале файла
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
 app = FastAPI()
 
 rag_sessions: dict[str, RAGGraph] = {}
@@ -104,7 +98,6 @@ async def send_message(user_data: User):
     Raises:
         HTTPException: If no file has been uploaded before querying the bot.
     """
-    logger.info(f"!!! ЧАТ ВЫЗВАН: session_id={user_data.session_id}")
     current_rag = rag_sessions.get(user_data.session_id)
 
     if current_rag is None:
