@@ -71,7 +71,7 @@ class RAGGraph:
 
         message_doc = [Document(page_content=last_message.content)]
         message_embeddings: ndarray = self.embedder.make_embeddings(message_doc)
-        _, indices = self.vector_db.search(x=message_embeddings, k=os.getenv("VDB_SEARCH_K"))
+        _, indices = self.vector_db.search(x=message_embeddings, k=int(os.getenv("VDB_SEARCH_K")))
         found_docs: list[Document] = [self.splitted_text[vec] for vec in indices[0]]
         return {"extracted_docs": found_docs}
 

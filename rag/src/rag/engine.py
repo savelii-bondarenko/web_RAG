@@ -19,7 +19,6 @@ def prepare_rag_assets(file_path: str):
     """
     extracted_text: str = read_data(file_path)
     splitted_text: list[Document] = split_text(extracted_text)
-
     embedder = Embedder()
     embeddings: ndarray = embedder.make_embeddings(splitted_text)
     vector_db: Index = create_vectorDB(embeddings)
