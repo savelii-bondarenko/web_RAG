@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
-
+ENV UV_LINK_MODE=copy
 COPY pyproject.toml uv.lock ./
 COPY backend/pyproject.toml ./backend/
 COPY rag/pyproject.toml ./rag/
