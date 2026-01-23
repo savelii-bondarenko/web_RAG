@@ -14,7 +14,7 @@ with st.sidebar:
     st.title("Upload file")
     st.header("Supported formats")
     st.markdown("""
-    * txt
+    * txt(text-plain)
     * pdf
     * docx
     * xlsx
