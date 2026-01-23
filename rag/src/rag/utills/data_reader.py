@@ -91,7 +91,7 @@ def _detect_file_format(file_path: str) -> str:
 
     Args:
         file_path (str): Path to the input file.
-        Supported formats: txt, doc, pdf, xlsx.
+        Supported formats: txt, docx, pdf, xlsx.
 
     Returns:
         str: Extracted text from the file.
