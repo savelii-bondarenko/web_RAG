@@ -3,8 +3,6 @@ import tempfile
 import asyncio
 import uuid
 
-from typing import Literal
-
 from fastapi import FastAPI, UploadFile, File, HTTPException, Form
 from pydantic import BaseModel, ConfigDict
 

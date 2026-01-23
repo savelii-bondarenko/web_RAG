@@ -2,8 +2,6 @@ import streamlit as st
 import requests
 import os
 
-supported_formats = ("txt", "pdf", "docx", "xlsx")
-
 BACKEND_URL = os.environ.get("BACKEND_URL", "http://localhost:8000")
 
 if "session_id" not in st.session_state:
@@ -22,7 +20,7 @@ with st.sidebar:
     * xlsx
     """)
 
-    uploaded_file = st.file_uploader("Upload file", type=supported_formats)
+    uploaded_file = st.file_uploader("Upload file")
 
     if st.button("Upload file"):
         if uploaded_file is not None:
@@ -30,22 +28,20 @@ with st.sidebar:
                 "file": (uploaded_file.name, uploaded_file.getvalue(), uploaded_file.type)
             }
 
-            st.write("Sending file to backend...")
+            with st.spinner("Sending file to backend..."):
+                try:
+                    response = requests.post(f"{BACKEND_URL}/upload", files=files)
 
-            try:
-                response = requests.post(f"{BACKEND_URL}/upload", files=files)
+                    if response.status_code == 200:
+                        st.session_state.session_id = response.json().get("session_id")
+                        st.session_state.file_uploaded = True
+                        st.session_state.messages = []
+                        st.success("File uploaded successfully!")
+                    else:
+                        st.error(f"Error: {response.status_code} - {response.text}")
 
-                if response.status_code == 200:
-                    st.session_state.session_id = response.json().get("session_id")
-                    st.session_state.file_uploaded = True
-                    st.session_state.messages = []
-                    st.success("File uploaded successfully!")
-                else:
-                    st.error(f"Error: {response.status_code} - {response.text}")
-
-            except requests.exceptions.ConnectionError:
-                st.error(f"Failed to connect to {BACKEND_URL}. Is the backend running?")
-
+                except requests.exceptions.ConnectionError:
+                    st.error(f"Failed to connect to {BACKEND_URL}. Is the backend running?")
         else:
             st.info("Please upload a file in the sidebar to start.")
 
