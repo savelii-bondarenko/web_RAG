@@ -4,6 +4,8 @@ from .utills import (read_data, split_text, Embedder, create_vectorDB)
 from langchain_core.documents import Document
 from faiss import Index
 
+global_embedder = Embedder()
+
 def prepare_rag_assets(file_path: str):
     """Prepare data for RAG
 
@@ -19,8 +21,7 @@ def prepare_rag_assets(file_path: str):
     """
     extracted_text: str = read_data(file_path)
     splitted_text: list[Document] = split_text(extracted_text)
-    embedder = Embedder()
-    embeddings: ndarray = embedder.make_embeddings(splitted_text)
+    embeddings: ndarray = global_embedder.make_embeddings(splitted_text)
     vector_db: Index = create_vectorDB(embeddings)
 
-    return splitted_text, embedder, vector_db
+    return splitted_text, global_embedder, vector_db
