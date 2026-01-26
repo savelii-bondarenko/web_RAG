@@ -12,7 +12,7 @@ class Embedder:
     """
     def __init__(self, model_name: str = 'BAAI/bge-m3'):
         try:
-            self.model = BGEM3FlagModel(model_name)
+            self.model = BGEM3FlagModel(model_name, devices="cuda:0")
             logger.info(f"BGEM3 flag model loaded: {model_name}")
         except Exception as e:
             logger.critical("Failed to load BGEM3 flag model")
@@ -20,7 +20,7 @@ class Embedder:
 
     def make_embeddings(self,
                         data: list[Document],
-                        batch_size: int = 128) -> np.ndarray:
+                        batch_size: int = 16) -> np.ndarray:
         """Make embeddings from a list of documents.
 
         Args:

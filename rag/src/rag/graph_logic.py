@@ -46,6 +46,7 @@ class RAGGraph:
         self.embedder = embedder
         self.vector_db = vector_db
         self._tool_node = ToolNode(TOOLS)
+        self.app = self._build_graph()
 
     def _retriever_node(self, state: State) -> State:
         """
@@ -137,12 +138,12 @@ class RAGGraph:
             dict(text): LLM answer
 
         """
-        app = self._build_graph()
+
         initial_state = {
             "messages": [HumanMessage(content=user_question)],
             "extracted_docs": []
         }
-        result = app.invoke(initial_state)
+        result = self.app.invoke(initial_state)
         last_msg = result["messages"][-1]
         return {
             "text": last_msg.content,

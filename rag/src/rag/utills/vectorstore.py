@@ -3,6 +3,9 @@ import numpy as np
 import logging
 
 logger = logging.getLogger(__name__)
+
+res = faiss.StandardGpuResources()
+
 def create_vectorDB(embeddings: np.ndarray) -> faiss.Index:
     """Create faiss index from embeddings.
 
@@ -17,7 +20,7 @@ def create_vectorDB(embeddings: np.ndarray) -> faiss.Index:
     """
     try:
         dimension = embeddings.shape[1]
-        vectorstore = faiss.IndexFlatIP(dimension)
+        vectorstore = faiss.GpuIndexFlatIP(res, dimension)
         vectorstore.add(embeddings.astype(np.float32))
         logger.info("Created faiss vectorstore")
         return vectorstore
