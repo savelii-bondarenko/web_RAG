@@ -2,6 +2,7 @@ import streamlit as st
 import requests
 import os
 
+supported_formats = ("txt", "pdf", "docx", "xlsx")
 BACKEND_URL = os.environ.get("BACKEND_URL", "http://localhost:8000")
 
 if "session_id" not in st.session_state:
@@ -14,13 +15,13 @@ with st.sidebar:
     st.title("Upload file")
     st.header("Supported formats")
     st.markdown("""
-    * txt(text-plain)
+    * txt
     * pdf
     * docx
     * xlsx
     """)
 
-    uploaded_file = st.file_uploader("Upload file")
+    uploaded_file = st.file_uploader("Upload file", type=supported_formats)
 
     if st.button("Upload file"):
         if uploaded_file is not None:
@@ -28,7 +29,7 @@ with st.sidebar:
                 "file": (uploaded_file.name, uploaded_file.getvalue(), uploaded_file.type)
             }
 
-            with st.spinner("Sending file to backend..."):
+            with st.spinner("Sending le to backend..."):
                 try:
                     response = requests.post(f"{BACKEND_URL}/upload", files=files)
 
