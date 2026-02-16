@@ -1,0 +1,37 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: rag_backend
+    image: thesav4ik/rag_backend:v1
+    command: uv run fastapi run backend/src/backend/server.py --port 8000 --host 0.0.0.0
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend/src:/app/backend/src
+      - ./rag/src:/app/rag/src
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8000/health" ]
+      interval: 5s
+      retries: 5
+      start_period: 10s
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    image: thesav4ik/rag_frontend:v1
+    container_name: rag_frontend
+    command: streamlit run frontend/src/frontend/frontend.py --server.port 8501 --server.address 0.0.0.0
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./frontend/src:/app/frontend/src
+    environment:
+      - BACKEND_URL=http://backend:8000
+    depends_on:
+      backend:
+        condition: service_healthy

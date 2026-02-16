@@ -1,0 +1,13 @@
+[project]
+name = "myproject-root"
+version = "0.1.0"
+description = "My simple RAG agent"
+#readme = "README.md"
+requires-python = ">=3.12"
+
+[tool.uv.workspace]
+members = [
+    "backend",
+    "frontend",
+    "rag"
+]
