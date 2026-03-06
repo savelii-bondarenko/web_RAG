@@ -41,12 +41,10 @@ The project is organized into three main workspaces:
 
 ### Environment Configuration
 
-Create a `.env` file in the root directory. You will need to configure the DeepSeek API key and vector database search parameters.
+Create a `.env` file in the root directory. You will need to configure the vector database search parameters. It is how deeply RAG can search.
 
 ```env
-DEEPSEEK_API_KEY=your_deepseek_api_key_here
-VDB_SEARCH_K=3
-
+VDB_SEARCH_K=5
 ```
 
 ### Running with Docker (Recommended)
@@ -111,3 +109,4 @@ The backend exposes the following endpoints:
 2. Use the sidebar to **Upload a file** (Supported formats: `.txt`, `.pdf`, `.docx`, `.xlsx`).
 3. Once the file is uploaded and processed, use the chat input to ask questions about the document.
 4. The agent will retrieve relevant context and generate an answer, potentially using math tools if calculation is required.
+
